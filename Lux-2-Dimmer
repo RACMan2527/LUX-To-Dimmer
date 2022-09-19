@@ -25,11 +25,7 @@ mode: single
 
 variables:
   light_sensor: !input light_sensor_entity
-         t4: "{{ 0.0000000000000065 * light_sensor * crntlight_sensorLux * light_sensor * light_sensor }}"
-         t3: "{{ 0.00000000027 * light_sensor * light_sensor * light_sensor }}"
-         t2: "{{ 0.000004 * light_sensor * light_sensor }}"
-         t1: "{{ 0.0278 * light_sensor }}"
-         t0: "{{ 3.0 }}"
+
   
 
 trigger:
@@ -42,10 +38,14 @@ action:
   - service: light.turn_on
     data:
       brightness_pct: >
-        {% if states(light_sensor)|int > maxB %}
+        {% if states(light_sensor)|int = 0 }
           1
         {% else %}
-          {{ (( -t4 + t3 - t2 + t1 + t0 )|round }}
+        {{ (-0.0000000000000065 * states(light_sensor) * states(light_sensor) * states(light_sensor) * states(light_sensor) )
+         + (0.00000000027 * states(light_sensor) * states(light_sensor) *states(light_sensor))
+         - ( 0.000004 * states(light_sensor) * states(light_sensor)) 
+         + ( 0.0278 * states(light_sensor) )
+         + 3.0)|round }}
         {% endif %}
 
     target: !input target_light
