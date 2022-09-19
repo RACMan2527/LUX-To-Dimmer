@@ -23,8 +23,6 @@ blueprint:
 
 mode: single
 
-variables:
-  light_sensor: !input light_sensor_entity
 
   
 
@@ -32,20 +30,22 @@ trigger:
   platform: state
   entity_id: !input light_sensor_entity
 
-condition:
+variables:
+  light_sensor: !input light_sensor_entity
+  newBrightness: "   {{ (-0.0000000000000065 * light_sensor * light_sensor * light_sensor * light_sensor )
+         + (0.00000000027 * light_sensor * light_sensor * light_sensor)
+         - ( 0.000004 * light_sensor * light_sensor) 
+         + ( 0.0278 * light_sensor )
+         + 3.0 |round }}"
 
 action:
   - service: light.turn_on
     data:
       brightness_pct: >
-        {% if states(light_sensor)|int == 0 }
+        {% if newBrightness|int == 0 }
           1
         {% else %}
-        {{ (-0.0000000000000065 * states(light_sensor) * states(light_sensor) * states(light_sensor) * states(light_sensor) )
-         + (0.00000000027 * states(light_sensor) * states(light_sensor) *states(light_sensor))
-         - ( 0.000004 * states(light_sensor) * states(light_sensor)) 
-         + ( 0.0278 * states(light_sensor) )
-         + 3.0)|round }}
+          newBrightness
         {% endif %}
 
     target: !input target_light
