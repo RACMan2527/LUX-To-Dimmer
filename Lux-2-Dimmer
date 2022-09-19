@@ -38,7 +38,7 @@ action:
   - service: light.turn_on
     data:
       brightness_pct: >
-        {% if states(light_sensor)|int = 0 }
+        {% if states(light_sensor)|int == 0 }
           1
         {% else %}
         {{ (-0.0000000000000065 * states(light_sensor) * states(light_sensor) * states(light_sensor) * states(light_sensor) )
